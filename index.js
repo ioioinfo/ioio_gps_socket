@@ -1,6 +1,7 @@
 //  Sever --> Client 的单向通讯
 var net = require('net');
 const uu_request = require('./uu_request');
+const buffer = require('buffer');
 
 var chatServer = net.createServer();
 var clientList = [];
@@ -47,8 +48,29 @@ chatServer.on('connection', function(client) {
 
 
     client.on('data', function(data) {
-        var info = {
+		var buffer = new Buffer(data);
+		if (buffer.length!=24) {
+			console.log("buffer length error buff length:"+buffer.length);
+			client.write('error');
+			return;
+		}
+		//var latitude = buffer.slice(0, 7);
+		var latitude = buffer.readFloatBE();
 
+		//var longitude = buffer.slice(8, 15);
+		var longitude = buffer.readFloatBE();
+
+		//var gps_id = buffer.slice(16, 19);
+		var gps_id = buffer.readUInt8();
+
+		//var time = buffer.slice(20, 23);
+		var time = buffer.readUInt8();
+
+        var info = {
+			"longitude":longitude,
+			"latitude":latitude,
+			"gps_id":gps_id,
+			"time":time
         };
         receive_gps_info({"info":JSON.stringify(info)},function(err,rows){
             if (!err) {
@@ -68,4 +90,4 @@ chatServer.on('connection', function(client) {
     // client.end(); // 服务端结束该次会话
 });
 
-chatServer.listen(9000);
+chatServer.listen(9999);

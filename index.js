@@ -48,39 +48,51 @@ chatServer.on('connection', function(client) {
 
 
     client.on('data', function(data) {
-		var buffer = new Buffer(data);
-		if (buffer.length!=24) {
-			console.log("buffer length error buff length:"+buffer.length);
-			client.write('error');
-			return;
+		try{
+			var buffer = new Buffer(data);
+			if (buffer.length!=24) {
+				console.log("buffer length error buff length:"+buffer.length);
+				client.write('error');
+				return;
+			}
+			//var latitude = buffer.slice(0, 7);
+			var latitude = buffer.readFloatBE();
+
+			//var longitude = buffer.slice(8, 15);
+			var longitude = buffer.readFloatBE();
+
+			//var gps_id = buffer.slice(16, 19);
+			var gps_id = buffer.readUInt8();
+
+			//var time = buffer.slice(20, 23);
+			var time = buffer.readUInt8();
+
+	        var info = {
+				"longitude":longitude,
+				"latitude":latitude,
+				"gps_id":gps_id,
+				"time":time
+	        };
+			console.log("info"+JSON.stringify(info));
+
+	        receive_gps_info({"info":JSON.stringify(info)},function(err,rows){
+	            if (!err) {
+	                client.write('received: ok');
+	            }else {
+					if (!rows) {
+						client.write('received:');
+		                client.write('message: err');
+					}else {
+						client.write('received:');
+		                client.write('message:');
+		                client.write(rows.message);
+					}
+	            }
+	        });
+		}catch(err){
+		     console.log(err) // 可执行
 		}
-		//var latitude = buffer.slice(0, 7);
-		var latitude = buffer.readFloatBE();
 
-		//var longitude = buffer.slice(8, 15);
-		var longitude = buffer.readFloatBE();
-
-		//var gps_id = buffer.slice(16, 19);
-		var gps_id = buffer.readUInt8();
-
-		//var time = buffer.slice(20, 23);
-		var time = buffer.readUInt8();
-
-        var info = {
-			"longitude":longitude,
-			"latitude":latitude,
-			"gps_id":gps_id,
-			"time":time
-        };
-        receive_gps_info({"info":JSON.stringify(info)},function(err,rows){
-            if (!err) {
-                client.write('received: ok');
-            }else {
-                client.write('received:');
-                client.write('message:');
-                client.write(rows.message);
-            }
-        });
     });
 
     client.write('Hi!\n'); // 服务端向客户端输出信息，使用 write() 方法

@@ -56,16 +56,16 @@ chatServer.on('connection', function(client) {
 				return;
 			}
 			//var latitude = buffer.slice(0, 7);
-			var latitude = buffer.readFloatBE();
+			var latitude = buffer.readFloatLE();
 
 			//var longitude = buffer.slice(8, 15);
-			var longitude = buffer.readFloatBE();
+			var longitude = buffer.readFloatLE();
 
 			//var gps_id = buffer.slice(16, 19);
-			var gps_id = buffer.readUInt8();
+			var gps_id = buffer.readInt32LE();
 
 			//var time = buffer.slice(20, 23);
-			var time = buffer.readUInt8();
+			var time = buffer.readInt32LE();
 
 	        var info = {
 				"longitude":longitude,

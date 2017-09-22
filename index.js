@@ -59,13 +59,13 @@ chatServer.on('connection', function(client) {
 			var latitude = buffer.readDoubleLE();
 
 			//var longitude = buffer.slice(8, 15);
-			var longitude = buffer.readDoubleLE();
+			var longitude = buffer.readDoubleLE(8);
 
 			//var gps_id = buffer.slice(16, 19);
-			var gps_id = buffer.readInt32LE();
+			var gps_id = buffer.readInt32LE(16);
 
 			//var time = buffer.slice(20, 23);
-			var time = buffer.readInt32LE();
+			var time = buffer.readInt32LE(20);
 
 	        var info = {
 				"longitude":longitude,

@@ -94,6 +94,11 @@ chatServer.on('connection', function(client) {
 		}
 
     });
+    
+    //错误处理
+    client.on('error', function(e) {
+        console.log("socket error:" + e);
+    });
 
     client.write('Hi!\n'); // 服务端向客户端输出信息，使用 write() 方法
     client.write('Bye!\n');
